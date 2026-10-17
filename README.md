@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=Haider2231&label=Visitas&color=dc2626&style=flat-square" alt="Visitas" />
+  <img src="https://api.visitorbadge.io/api/visitors?path=Haider2231&label=Visitas&labelColor=%230D0B14&countColor=%23DC2626&style=flat-square" alt="Visitas" />
 </p>
 
 ---
