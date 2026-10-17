@@ -1,0 +1,25 @@
+{
+  "type": "normal",
+  "fileName": "profile-sombras.svg",
+  "backgroundColor": "#0D0B14",
+  "foregroundColor": "#E5E7EB",
+  "strongColor": "#DC2626",
+  "weakColor": "#6B7280",
+  "radarColor": "#A855F7",
+  "growingAnimation": true,
+  "contribColors": [
+    "#1A1625",
+    "#4C1D95",
+    "#7C3AED",
+    "#A855F7",
+    "#DC2626"
+  ],
+  "l10n": {
+    "commit": "Commits",
+    "repo": "Repositorios",
+    "review": "Revisiones",
+    "pullreq": "Pull/Req",
+    "issue": "Issues",
+    "contrib": "contribuciones"
+  }
+}
