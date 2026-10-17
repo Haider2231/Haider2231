@@ -35,10 +35,10 @@ Tengo tres caminos y un mismo objetivo: **superar mis límites**.
 
 Datos, modelos y decisiones bien pensadas antes de escribir la primera línea.
 
-| Proyecto | Qué hace | Stack |
-|---|---|---|
-| [**sp500-fair-value-model**](https://github.com/Haider2231/sp500-fair-value-model) | Estima el valor justo del S&P 500 con 4 metodologías y las valida con un backtest desde 1871 | Python · Streamlit |
-| [**easyDiesel**](https://github.com/FelipeGo18/easyDiesel_kode) | Proyecto de grado (en equipo): trazabilidad del combustible y precio correcto según el Decreto 1428 de 2025 | React · Express · Prisma · PostgreSQL |
+<p align="center">
+  <a href="https://github.com/Haider2231/sp500-fair-value-model"><img src="./assets/mision-sp500.svg" width="49%" alt="sp500-fair-value-model" /></a>
+  <a href="https://github.com/FelipeGo18/easyDiesel_kode"><img src="./assets/mision-easydiesel.svg" width="49%" alt="easyDiesel" /></a>
+</p>
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=python,postgres,prisma,express,ts&theme=dark" alt="Stack del camino I" />
@@ -53,11 +53,14 @@ Datos, modelos y decisiones bien pensadas antes de escribir la primera línea.
 
 Lo que no se ve pero lo sostiene todo: conexiones remotas, hardware y sistemas en tiempo real.
 
-| Proyecto | Qué hace | Stack |
-|---|---|---|
-| [**LaboRemoto**](https://github.com/LabRemotoUpiloto/LaboRemoto) | Cliente de escritorio para laboratorios remotos de la universidad: terminal SSH, SFTP, escritorio VNC, control de GPIO en Raspberry Pi, Arduino, cámaras WebRTC y un agente de IA | Rust · Tauri · React · TypeScript |
-| **Peaje Free-Flow** (privado) | Peaje sin barreras (en equipo): detección de placas con YOLO en Jetson, lectura RFID UHF, AWS IoT por MQTT y backend .NET con SignalR | C# · .NET · Python · React |
-| [**windowsSSH-3.0**](https://github.com/Haider2231/windowsSSH-3.0) · [**Releases-Cliente-SSH**](https://github.com/Haider2231/Releases-Cliente-SSH-Unipiloto) | Cliente SSH para Windows y su flujo de releases | Python · PowerShell |
+<p align="center">
+  <a href="https://github.com/LabRemotoUpiloto/LaboRemoto"><img src="./assets/mision-laboremoto.svg" width="49%" alt="LaboRemoto" /></a>
+  <img src="./assets/mision-peaje.svg" width="49%" alt="Peaje Free-Flow" />
+</p>
+<p align="center">
+  <a href="https://github.com/Haider2231/windowsSSH-3.0"><img src="./assets/mision-windowsssh.svg" width="49%" alt="windowsSSH-3.0" /></a>
+  <a href="https://github.com/Haider2231/Releases-Cliente-SSH-Unipiloto"><img src="./assets/mision-releases.svg" width="49%" alt="Releases Cliente SSH" /></a>
+</p>
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=rust,tauri,cs,dotnet,cpp,opencv,linux,raspberrypi,arduino,aws,docker,powershell&theme=dark" alt="Stack del camino II" />
@@ -72,12 +75,14 @@ Lo que no se ve pero lo sostiene todo: conexiones remotas, hardware y sistemas e
 
 Productos hechos desde cero y laboratorios donde aprendo a golpes.
 
-| Proyecto | Qué hace | Stack |
-|---|---|---|
-| **Pet Shop Gachancipá** (privado) | Tienda en línea para una pet shop local: catálogo, carrito y pedidos a domicilio | React · Supabase · Tailwind |
-| **Blusas E-commerce** (privado) · **Music Stats** (privado) | Catálogo de tienda y estadísticas de música | TypeScript · React |
-| [**Chat**](https://github.com/Haider2231/Chat) · [**Server-Socket**](https://github.com/Haider2231/Server-Socket) | Chat y servidor por sockets, mis primeros pasos en redes | Java |
-| [**Laboratorio-signup-login**](https://github.com/Haider2231/Laboratorio-signup-login) · [**prueba_reserva**](https://github.com/Haider2231/prueba_reserva) | Laboratorios de autenticación y reservas | Java · JavaScript |
+<p align="center">
+  <img src="./assets/mision-petshop.svg" width="49%" alt="Pet Shop Gachancipá" />
+  <img src="./assets/mision-blusas.svg" width="49%" alt="Blusas E-commerce" />
+</p>
+<p align="center">
+  <a href="https://github.com/Haider2231/Chat"><img src="./assets/mision-sockets.svg" width="49%" alt="Chat y Server-Socket" /></a>
+  <a href="https://github.com/Haider2231/Laboratorio-signup-login"><img src="./assets/mision-laboratorios.svg" width="49%" alt="Laboratorios" /></a>
+</p>
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=react,ts,js,tailwind,vite,nodejs,supabase,firebase,java,git,github&theme=dark" alt="Stack del camino III" />

@@ -6,6 +6,7 @@ Lee assets/fuentes/*.jpg y escribe en assets/:
   sistema.svg          ventana de estado estilo Solo Leveling
   arise.svg            Igris y el ejército de sombras de Jin-Woo
   camino-*.svg         las tarjetas de los tres caminos
+  mision-*.svg         una tarjeta por proyecto
 """
 
 import base64
@@ -855,6 +856,224 @@ def camino(banner: Image.Image, c: dict) -> str:
 """
 
 
+# ------------------------------------------------------- tarjetas de misión
+
+TEMAS = {
+    "ayanokoji": {"acento": "#F59E0B", "acento2": "#DC2626", "numero": "I"},
+    "jinwoo": {"acento": "#A855F7", "acento2": "#6366F1", "numero": "II"},
+    "asta": {"acento": "#DC2626", "acento2": "#F97316", "numero": "III"},
+}
+
+PROYECTOS = [
+    {
+        "archivo": "mision-sp500.svg", "camino": "ayanokoji", "nombre": "sp500-fair-value-model",
+        "estado": ["PÚBLICO"],
+        "texto": "Estima el valor justo del S&P 500 con 4 metodologías y las valida con un backtest desde 1871. Dashboard en Streamlit.",
+        "stack": ["Python", "Streamlit", "pandas"],
+    },
+    {
+        "archivo": "mision-easydiesel.svg", "camino": "ayanokoji", "nombre": "easyDiesel",
+        "estado": ["PÚBLICO", "EN EQUIPO"],
+        "texto": "Proyecto de grado: trazabilidad del combustible y precio correcto según el Decreto 1428 de 2025.",
+        "stack": ["React", "Express", "Prisma", "PostgreSQL"],
+    },
+    {
+        "archivo": "mision-laboremoto.svg", "camino": "jinwoo", "nombre": "LaboRemoto",
+        "estado": ["PÚBLICO"],
+        "texto": "Laboratorio remoto de la universidad: terminal SSH, SFTP, VNC, GPIO en Raspberry Pi, Arduino, cámaras WebRTC y agente de IA.",
+        "stack": ["Rust", "Tauri", "React", "TypeScript"],
+    },
+    {
+        "archivo": "mision-peaje.svg", "camino": "jinwoo", "nombre": "Peaje Free-Flow",
+        "estado": ["PRIVADO", "EN EQUIPO"],
+        "texto": "Peaje sin barreras: placas con YOLO en Jetson, lectura RFID UHF, AWS IoT por MQTT y backend .NET con SignalR.",
+        "stack": [".NET", "Python", "YOLO", "AWS IoT"],
+    },
+    {
+        "archivo": "mision-windowsssh.svg", "camino": "jinwoo", "nombre": "windowsSSH-3.0",
+        "estado": ["PÚBLICO"],
+        "texto": "Cliente SSH para Windows: conexión, terminal y gestión de sesiones remotas desde el escritorio.",
+        "stack": ["Python", "SSH"],
+    },
+    {
+        "archivo": "mision-releases.svg", "camino": "jinwoo", "nombre": "Releases Cliente SSH",
+        "estado": ["PÚBLICO"],
+        "texto": "Flujo de publicación: compila y despliega los releases oficiales del Cliente SSH Unipiloto en GitHub.",
+        "stack": ["PowerShell", "Bash", "GitHub"],
+    },
+    {
+        "archivo": "mision-petshop.svg", "camino": "asta", "nombre": "Pet Shop Gachancipá",
+        "estado": ["PRIVADO"],
+        "texto": "Tienda en línea para una pet shop local: catálogo, carrito y pedidos a domicilio o para recoger en tienda.",
+        "stack": ["React", "Supabase", "Tailwind"],
+    },
+    {
+        "archivo": "mision-blusas.svg", "camino": "asta", "nombre": "Blusas E-commerce",
+        "estado": ["PRIVADO"],
+        "texto": "Catálogo de tienda de ropa con fichas de producto y diseño adaptable a móvil.",
+        "stack": ["TypeScript", "React"],
+    },
+    {
+        "archivo": "mision-sockets.svg", "camino": "asta", "nombre": "Chat · Server-Socket",
+        "estado": ["PÚBLICO"],
+        "texto": "Chat y servidor por sockets: mis primeros pasos en redes, hilos y protocolos.",
+        "stack": ["Java", "Sockets"],
+    },
+    {
+        "archivo": "mision-laboratorios.svg", "camino": "asta", "nombre": "Laboratorios",
+        "estado": ["PÚBLICO"],
+        "texto": "Prácticas de autenticación, registro e inicio de sesión, y un sistema de reservas.",
+        "stack": ["Java", "JavaScript"],
+    },
+]
+
+
+def envolver(texto: str, max_chars: int) -> list[str]:
+    lineas, actual = [], ""
+    for palabra in texto.split():
+        prueba = f"{actual} {palabra}".strip()
+        if len(prueba) > max_chars and actual:
+            lineas.append(actual)
+            actual = palabra
+        else:
+            actual = prueba
+    if actual:
+        lineas.append(actual)
+    return lineas
+
+
+def esc(t: str) -> str:
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def adorno(camino: str, acento: str) -> str:
+    if camino == "ayanokoji":
+        casillas = "".join(
+            f'<rect x="{392 + c * 20}" y="{104 + f * 20}" width="20" height="20"/>'
+            for f in range(4) for c in range(4) if (f + c) % 2 == 0
+        )
+        return f'<g fill="{acento}" fill-opacity="0.08">{casillas}</g>'
+    if camino == "jinwoo":
+        runas = "".join(
+            f'<text x="{398 + (i % 3) * 24}" y="{128 + (i // 3) * 28}" class="runa" style="animation-delay:{i * 0.35:.2f}s">{ch}</text>'
+            for i, ch in enumerate("ᚠᚱᚦᚨᛁᛟ")
+        )
+        return f'<g fill="{acento}">{runas}</g>'
+    return f'<g transform="translate(436 140)" opacity="0.3"><g class="gira">{trebol(36, "#000000", acento, 2)}</g></g>'
+
+
+def tarjeta(p: dict, indice: int) -> str:
+    tema = TEMAS[p["camino"]]
+    acento, acento2 = tema["acento"], tema["acento2"]
+    W, H = 480, 206
+    lineas = envolver(p["texto"], 54)[:3]
+    texto = "".join(
+        f'<text x="34" y="{108 + i * 20}" class="texto" fill="#CBD5E1">{esc(l)}</text>' for i, l in enumerate(lineas)
+    )
+
+    # Etiquetas de estado arriba a la derecha (de derecha a izquierda)
+    etiquetas, borde = [], W - 22
+    for e in reversed(p["estado"]):
+        privado = e == "PRIVADO"
+        icono_ancho = 14 if privado else 0
+        ancho = len(e) * 7.4 + 22 + icono_ancho
+        x = borde - ancho
+        icono = (
+            f'<path d="M {x + 11} 29 h 8 v 6 h -8 Z M {x + 12.5} 29 v -2.5 a 2.5 2.5 0 0 1 5 0 v 2.5" fill="none" stroke="{acento}" stroke-width="1.4"/>'
+            if privado else ""
+        )
+        etiquetas.append(
+            f'<rect x="{x:.1f}" y="18" width="{ancho:.1f}" height="22" rx="11" fill="{acento}" fill-opacity="0.12" stroke="{acento}" stroke-opacity="0.6"/>'
+            f'{icono}<text x="{x + (ancho + icono_ancho) / 2:.1f}" y="33" text-anchor="middle" class="chip" fill="{acento}">{e}</text>'
+        )
+        borde = x - 8
+
+    # Pastillas del stack abajo
+    pastillas, x = [], 34
+    for i, t in enumerate(p["stack"]):
+        ancho = len(t) * 7.6 + 24
+        pastillas.append(
+            f'<g class="pastilla" style="animation-delay:{0.5 + i * 0.12:.2f}s">'
+            f'<rect x="{x:.1f}" y="166" width="{ancho:.1f}" height="24" rx="6" fill="#0B0A12" stroke="{acento}" stroke-opacity="0.45"/>'
+            f'<circle cx="{x + 11:.1f}" cy="178" r="3" fill="{acento}"/>'
+            f'<text x="{x + 19:.1f}" y="182.5" class="pastilla-texto" fill="#E5E7EB">{esc(t)}</text></g>'
+        )
+        x += ancho + 8
+
+    marco = f"M 14 1.5 H {W - 14} Q {W - 1.5} 1.5 {W - 1.5} 14 V {H - 14} Q {W - 1.5} {H - 1.5} {W - 14} {H - 1.5} H 14 Q 1.5 {H - 1.5} 1.5 {H - 14} V 14 Q 1.5 1.5 14 1.5 Z"
+    perimetro = 2 * (W + H)
+    css = """
+    .mision { font: 700 11px """ + FUENTE_MONO + """; letter-spacing: 3px; }
+    .nombre { font: 900 23px """ + FUENTE_TITULO + """; }
+    .texto { font: 400 14px """ + FUENTE_TEXTO + """; }
+    .chip { font: 700 10px """ + FUENTE_MONO + """; letter-spacing: 1px; }
+    .pastilla-texto { font: 600 12px """ + FUENTE_TEXTO + """; }
+    .runa { font: 400 20px 'Segoe UI Symbol', 'Noto Sans Runic', serif; animation: runa 3s ease-in-out infinite; opacity: 0.1; }
+    @keyframes runa { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.45; } }
+
+    .entra { animation: entrar 0.7s cubic-bezier(.2,.9,.3,1.2) both; }
+    @keyframes entrar { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .pastilla { animation: entrar 0.5s ease-out both; }
+    .luz { stroke-dasharray: 120 """ + str(perimetro) + """; animation: recorrer 5s linear infinite; }
+    @keyframes recorrer { to { stroke-dashoffset: -""" + str(perimetro + 120) + """; } }
+    .barra { animation: barra 2.2s ease-in-out infinite; }
+    @keyframes barra { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+    .brillo { animation: barrer 6s ease-in-out 1s infinite; }
+    @keyframes barrer { 0% { transform: translateX(-200px); } 30%, 100% { transform: translateX(700px); } }
+    .gira { animation: girar 20s linear infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes girar { to { transform: rotate(360deg); } }
+    """ + MOVIMIENTO_REDUCIDO
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-labelledby="t">
+  <title id="t">{esc(p["nombre"])}: {esc(p["texto"])}</title>
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14111F"/>
+      <stop offset="1" stop-color="#0B0A12"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0%" cy="0%" r="80%">
+      <stop offset="0" stop-color="{acento}" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="{acento}" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="barraG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{acento}"/>
+      <stop offset="1" stop-color="{acento2}"/>
+    </linearGradient>
+    <linearGradient id="brilloG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="neon" x="-50%" y="-20%" width="200%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="dentro"><path d="{marco}"/></clipPath>
+  </defs>
+  <style>{css}</style>
+
+  <path d="{marco}" fill="url(#fondo)"/>
+  <path d="{marco}" fill="url(#aura)"/>
+  <g clip-path="url(#dentro)">
+    {adorno(p["camino"], acento)}
+    <g transform="skewX(-20)"><rect x="0" y="0" width="140" height="{H}" fill="url(#brilloG)" class="brillo solo-animado"/></g>
+  </g>
+  <rect x="14" y="22" width="4" height="{H - 44}" rx="2" fill="url(#barraG)" filter="url(#neon)" class="barra"/>
+  <path d="{marco}" fill="none" stroke="{acento}" stroke-opacity="0.35" stroke-width="1.5"/>
+  <path d="{marco}" fill="none" stroke="{acento}" stroke-width="2.5" class="luz solo-animado" filter="url(#neon)"/>
+
+  <g class="entra">
+    <text x="34" y="34" class="mision" fill="{acento}">MISIÓN {tema["numero"]}-{indice:02d}</text>
+    {"".join(etiquetas)}
+    <text x="34" y="74" class="nombre" fill="#F9FAFB">{esc(p["nombre"])}</text>
+    <line x1="34" y1="86" x2="{W - 34}" y2="86" stroke="{acento}" stroke-opacity="0.25"/>
+    {texto}
+  </g>
+  {"".join(pastillas)}
+</svg>
+"""
+
+
 def main() -> None:
     banner = Image.open(BANNER).convert("RGB")
     salidas = {
@@ -864,6 +1083,10 @@ def main() -> None:
     }
     for c in CAMINOS:
         salidas[c["archivo"]] = camino(banner, c)
+    contadores = {}
+    for p in PROYECTOS:
+        contadores[p["camino"]] = contadores.get(p["camino"], 0) + 1
+        salidas[p["archivo"]] = tarjeta(p, contadores[p["camino"]])
     for nombre, svg in salidas.items():
         (ASSETS / nombre).write_text(svg, encoding="utf-8")
         print(f"{nombre}: {len(svg.encode('utf-8')) // 1024} KB")
