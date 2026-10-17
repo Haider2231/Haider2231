@@ -97,16 +97,16 @@ Productos hechos desde cero y laboratorios donde aprendo a golpes.
 </p>
 
 <p align="center">
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=Haider2231&show_icons=true&include_all_commits=true&count_private=true&bg_color=0D0B14&title_color=DC2626&text_color=E5E7EB&icon_color=A855F7&border_color=3B0A14&locale=es" alt="Estadísticas" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Haider2231&layout=compact&bg_color=0D0B14&title_color=DC2626&text_color=E5E7EB&border_color=3B0A14&locale=es" alt="Lenguajes" />
+  <img height="170" src="https://github-readme-stats.vercel.app/api?username=Haider2231&show_icons=true&include_all_commits=true&hide=contribs&cache_seconds=14400&v=2&bg_color=0D0B14&title_color=DC2626&text_color=E5E7EB&icon_color=A855F7&border_color=3B0A14&locale=es" alt="Estadísticas" />
+  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Haider2231&cache_seconds=14400&v=2&layout=compact&bg_color=0D0B14&title_color=DC2626&text_color=E5E7EB&border_color=3B0A14&locale=es" alt="Lenguajes" />
 </p>
 
 <p align="center">
-  <img src="https://streak-stats.demolab.com?user=Haider2231&locale=es&background=0D0B14&border=3B0A14&stroke=3B0A14&ring=DC2626&fire=EF4444&currStreakNum=FFFFFF&currStreakLabel=DC2626&sideNums=FFFFFF&sideLabels=E5E7EB&dates=9CA3AF" alt="Racha" />
+  <img src="https://streak-stats.demolab.com?user=Haider2231&v=2&locale=es&background=0D0B14&border=3B0A14&stroke=3B0A14&ring=DC2626&fire=EF4444&currStreakNum=FFFFFF&currStreakLabel=DC2626&sideNums=FFFFFF&sideLabels=E5E7EB&dates=9CA3AF" alt="Racha" />
 </p>
 
 <p align="center">
-  <img src="https://trophy.ryglcloud.net/?username=Haider2231&theme=darkhub&no-frame=true&no-bg=true&column=6&margin-w=10" alt="Trofeos" />
+  <img src="https://trophy.ryglcloud.net/?username=Haider2231&v=2&theme=darkhub&no-frame=true&no-bg=true&column=6&margin-w=10" alt="Trofeos" />
 </p>
 
 ## Mi ciudad de contribuciones
