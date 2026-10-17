@@ -2,7 +2,6 @@
 
 Uso:  python scripts/generar_escenas.py
 Lee assets/fuentes/*.jpg y escribe en assets/:
-  banner-vivo.svg      el banner con ojos, rayos y brasas animados
   antimagia.svg        Black Asta con "Supera tus límites. Aquí y ahora."
   sistema.svg          ventana de estado estilo Solo Leveling
   arise.svg            Igris y el ejército de sombras de Jin-Woo
@@ -99,100 +98,6 @@ def trebol(r: float, relleno: str, borde: str, ancho_borde: float = 2) -> str:
     )
     tallo = f'<path d="M 0 0 Q {8*s:.1f} {30*s:.1f} {-6*s:.1f} {58*s:.1f}" stroke="{borde}" stroke-width="{ancho_borde * 1.6}" fill="none" stroke-linecap="round"/>'
     return tallo + hojas
-
-
-# ------------------------------------------------------------ banner vivo
-
-def banner_vivo() -> str:
-    banner = Image.open(BANNER).convert("RGB")
-    w, h = banner.size
-    rng = random.Random(7)
-
-    # Ojos y destellos ubicados sobre la imagen (coordenadas del banner 1280x558)
-    ojos_sombras = [(352, 31), (375, 29), (162, 114), (177, 115), (770, 175), (790, 175),
-                    (850, 195), (867, 195), (987, 122), (1005, 125), (1075, 217), (1085, 218),
-                    (1190, 222), (1202, 222), (239, 174), (252, 167)]
-    ojos_jinwoo = [(647, 77), (698, 106)]
-    lanzas = [(1075, 45), (1170, 140)]
-
-    ojos = []
-    for i, (x, y) in enumerate(ojos_sombras):
-        ojos.append(f'<circle cx="{x}" cy="{y}" r="5" fill="#A5B4FC" class="ojo" style="animation-delay:{rng.uniform(0, 3):.2f}s"/>')
-    for x, y in ojos_jinwoo:
-        ojos.append(f'<circle cx="{x}" cy="{y}" r="9" fill="#60A5FA" class="ojo-jinwoo"/>')
-    destellos = []
-    for i, (x, y) in enumerate(lanzas):
-        destellos.append(
-            f'<g transform="translate({x} {y})"><g class="destello" style="animation-delay:{1.2 + i * 2.1}s">'
-            f'<path d="M 0 -26 L 3 -3 L 26 0 L 3 3 L 0 26 L -3 3 L -26 0 L -3 -3 Z" fill="#E0E7FF"/>'
-            f'<circle r="6" fill="#FFFFFF"/></g></g>'
-        )
-
-    rayos = []
-    zonas = [(300, 60, 380, 220), (440, 120, 520, 260), (820, 140, 900, 280), (930, 60, 1010, 200), (60, 150, 140, 300)]
-    for i, (a, b, c, d) in enumerate(zonas):
-        path = rayo(rng, a, b, c, d, pasos=8, desvio=22)
-        rayos.append(
-            f'<g class="rayo solo-animado" style="animation-delay:{i * 1.37:.2f}s">'
-            f'<path d="{path}" stroke="#A855F7" stroke-width="6" fill="none" filter="url(#brilloRayo)"/>'
-            f'<path d="{path}" stroke="#F5F3FF" stroke-width="1.8" fill="none"/></g>'
-        )
-
-    css = """
-    .ojo { animation: ojo 3.2s ease-in-out infinite; opacity: 0; }
-    @keyframes ojo { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.95; } }
-    .ojo-jinwoo { animation: jinwoo 2.6s ease-in-out infinite; }
-    @keyframes jinwoo { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
-    .destello { animation: destello 4.2s ease-out infinite; opacity: 0; transform-box: fill-box; transform-origin: center; }
-    @keyframes destello { 0%, 70%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); } 76% { opacity: 1; transform: scale(1) rotate(45deg); } 86% { opacity: 0; transform: scale(0.4) rotate(90deg); } }
-    .rayo { animation: rayo 6.8s steps(1) infinite; opacity: 0; }
-    @keyframes rayo { 0%, 100% { opacity: 0; } 80% { opacity: 1; } 81.5% { opacity: 0.1; } 83% { opacity: 1; } 85% { opacity: 0; } }
-    .brasa { animation: brasa 4s ease-in infinite; opacity: 0; }
-    @keyframes brasa { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(-40px, -260px); } }
-    .niebla { animation: niebla 14s ease-in-out infinite alternate; }
-    @keyframes niebla { from { transform: translateX(-60px); } to { transform: translateX(60px); } }
-    .aviso { animation: aviso 9s ease-in-out 1s infinite; opacity: 0; }
-    @keyframes aviso { 0% { opacity: 0; transform: translateY(-14px); } 6%, 60% { opacity: 1; transform: none; } 68%, 100% { opacity: 0; transform: none; } }
-    .aviso-texto { font: 700 15px """ + FUENTE_MONO + """; letter-spacing: 1px; }
-    """ + MOVIMIENTO_REDUCIDO
-
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-labelledby="t">
-  <title id="t">Ayanokoji, Sung Jin-Woo y Asta con el ejército de sombras</title>
-  <defs>
-    <filter id="brilloOjo" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="4"/></filter>
-    <filter id="brilloRayo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
-    <filter id="borroso" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>
-    <radialGradient id="vineta" cx="50%" cy="45%" r="75%">
-      <stop offset="0.6" stop-color="#000" stop-opacity="0"/>
-      <stop offset="1" stop-color="#000" stop-opacity="0.55"/>
-    </radialGradient>
-  </defs>
-  <style>{css}</style>
-
-  <image width="{w}" height="{h}" href="data:image/jpeg;base64,{jpeg_base64(banner)}"/>
-
-  <g class="niebla solo-animado" filter="url(#borroso)" opacity="0.45">
-    <ellipse cx="240" cy="330" rx="260" ry="40" fill="#6D28D9"/>
-    <ellipse cx="760" cy="300" rx="220" ry="34" fill="#4C1D95"/>
-  </g>
-  <g filter="url(#brilloOjo)">
-    {"".join(ojos)}
-  </g>
-  {"".join(rayos)}
-  {"".join(destellos)}
-  <g>
-    {chispas(rng, 26, 860, 1280, h, ["#EF4444", "#F97316", "#DC2626", "#FCA5A5"], clase="brasa", r=(1.5, 3.8))}
-  </g>
-  <rect width="{w}" height="{h}" fill="url(#vineta)"/>
-
-  <g class="aviso solo-animado" transform="translate(28 26)">
-    <rect width="370" height="46" rx="6" fill="#030712" fill-opacity="0.78" stroke="#60A5FA" stroke-width="1.5"/>
-    <circle cx="24" cy="23" r="11" fill="none" stroke="#60A5FA" stroke-width="2"/>
-    <text x="24" y="28" text-anchor="middle" class="aviso-texto" fill="#60A5FA">!</text>
-    <text x="46" y="28" class="aviso-texto" fill="#DBEAFE">[SISTEMA] Jugador detectado: Haider</text>
-  </g>
-</svg>
-"""
 
 
 # --------------------------------------------------------------- antimagia
@@ -953,7 +858,6 @@ def camino(banner: Image.Image, c: dict) -> str:
 def main() -> None:
     banner = Image.open(BANNER).convert("RGB")
     salidas = {
-        "banner-vivo.svg": banner_vivo(),
         "antimagia.svg": antimagia(),
         "sistema.svg": sistema(),
         "arise.svg": arise(),

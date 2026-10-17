@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="./assets/banner-vivo.svg" width="100%" alt="Ayanokoji, Sung Jin-Woo y Asta con el ejército de sombras" />
-</p>
-
-<p align="center">
   <img src="./assets/antimagia.svg" width="100%" alt="Supera tus límites. Aquí y ahora." />
 </p>
 
