@@ -34,41 +34,6 @@ jobs:
           echo "total=$total" >> "$GITHUB_OUTPUT"
           echo "Contribuciones del $fecha: **$total**" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Avisar por WhatsApp
-        if: steps.hoy.outputs.total == '0' || inputs.probar == true
-        env:
-          TELEFONO: ${{ secrets.CALLMEBOT_PHONE }}
-          APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
-          FECHA: ${{ steps.hoy.outputs.fecha }}
-        run: |
-          if [ -z "$TELEFONO" ] || [ -z "$APIKEY" ]; then
-            echo "WhatsApp sin configurar: faltan los secretos CALLMEBOT_PHONE y CALLMEBOT_APIKEY." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          texto="Haider, hoy ($FECHA) todavía no tienes contribuciones en GitHub. Haz un commit antes de medianoche para no perder la racha. Supera tus límites, aquí y ahora."
-          curl -sS --fail --get "https://api.callmebot.com/whatsapp.php" \
-            --data-urlencode "phone=$TELEFONO" \
-            --data-urlencode "text=$texto" \
-            --data-urlencode "apikey=$APIKEY" > /dev/null
-          echo "Aviso enviado por WhatsApp." >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Avisar por Telegram
-        if: steps.hoy.outputs.total == '0' || inputs.probar == true
-        env:
-          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          FECHA: ${{ steps.hoy.outputs.fecha }}
-        run: |
-          if [ -z "$TOKEN" ] || [ -z "$CHAT_ID" ]; then
-            echo "Telegram sin configurar: faltan los secretos TELEGRAM_TOKEN y TELEGRAM_CHAT_ID." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          texto="Haider, hoy ($FECHA) todavía no tienes contribuciones en GitHub. Haz un commit antes de medianoche para no perder la racha. Supera tus límites, aquí y ahora."
-          curl -sS --fail "https://api.telegram.org/bot${TOKEN}/sendMessage" \
-            --data-urlencode "chat_id=$CHAT_ID" \
-            --data-urlencode "text=$texto" > /dev/null
-          echo "Aviso enviado por Telegram." >> "$GITHUB_STEP_SUMMARY"
-
       # Al fallar, GitHub manda un correo de "Run failed" a la cuenta dueña del flujo
       - name: Avisar por correo
         if: steps.hoy.outputs.total == '0' || inputs.probar == true
