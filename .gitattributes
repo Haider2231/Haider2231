@@ -1,0 +1,6 @@
+# Saltos de línea LF en el repo, aunque se edite desde Windows
+* text=auto eol=lf
+
+# Imágenes: nunca tocar sus bytes
+*.jpg binary
+*.png binary
