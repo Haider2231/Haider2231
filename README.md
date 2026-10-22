@@ -103,6 +103,10 @@ Productos hechos desde cero y laboratorios donde aprendo a golpes.
 </p>
 
 <p align="center">
+  <img src="./assets/mision-diaria.svg" width="100%" alt="Misión diaria: contribuir todos los días sin romper la racha" />
+</p>
+
+<p align="center">
   <img src="https://streak-stats.demolab.com?user=Haider2231&v=2&locale=es&background=0D0B14&border=3B0A14&stroke=3B0A14&ring=DC2626&fire=EF4444&currStreakNum=FFFFFF&currStreakLabel=DC2626&sideNums=FFFFFF&sideLabels=E5E7EB&dates=9CA3AF" alt="Racha" />
 </p>
 

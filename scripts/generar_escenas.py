@@ -4,6 +4,7 @@ Uso:  python scripts/generar_escenas.py
 Lee assets/fuentes/*.jpg y escribe en assets/:
   antimagia.svg        Black Asta con "Supera tus límites. Aquí y ahora."
   sistema.svg          ventana de estado estilo Solo Leveling
+  mision-diaria.svg    ventana de misión diaria (mantener la racha)
   arise.svg            Igris y el ejército de sombras de Jin-Woo
   camino-*.svg         las tarjetas de los tres caminos
   mision-*.svg         una tarjeta por proyecto
@@ -449,6 +450,117 @@ def sistema() -> str:
         <rect x="330" y="378" width="70" height="28" fill="none" stroke="#334155"/>
         <text x="365" y="398" text-anchor="middle" class="valor" fill="#64748B">NO</text>
       </g>
+    </g>
+  </g>
+</svg>
+"""
+
+
+# ---------------------------------------------------------- misión diaria
+
+def mision_diaria() -> str:
+    objetivos = [
+        ("Contribuir en GitHub", "1/1"),
+        ("Aprender algo nuevo", "1/1"),
+        ("Arreglar lo que se rompa", "1/1"),
+        ("No rendirse", "∞"),
+    ]
+    filas = []
+    for i, (nombre, progreso) in enumerate(objetivos):
+        y = 178 + i * 34
+        retraso = 1.2 + i * 0.22
+        filas.append(
+            f'<g class="linea" style="animation-delay:{retraso:.2f}s">'
+            f'<text x="60" y="{y}" class="valor" fill="#F8FAFC"><tspan fill="#60A5FA">▸ </tspan>{nombre}</text>'
+            f'<line x1="300" y1="{y - 6}" x2="440" y2="{y - 6}" stroke="#3B82F6" stroke-opacity="0.35" stroke-dasharray="2 5"/>'
+            f'<text x="455" y="{y}" class="etq" fill="#93C5FD">[{progreso}]</text>'
+            f'<path d="M 516 {y - 8} l 6 6 l 12 -13" fill="none" stroke="#4ADE80" stroke-width="3" '
+            f'stroke-linecap="round" stroke-linejoin="round" class="check" style="animation-delay:{retraso + 0.5:.2f}s"/></g>'
+        )
+
+    css = """
+    .etq { font: 700 13px """ + FUENTE_MONO + """; letter-spacing: 2px; }
+    .valor { font: 700 17px """ + FUENTE_TEXTO + """; }
+    .detalle { font: 400 14px """ + FUENTE_TEXTO + """; }
+    .cabecera { font: 900 22px """ + FUENTE_TITULO + """; letter-spacing: 8px; }
+    .grande { font: 900 26px """ + FUENTE_TITULO + """; }
+
+    .abre { animation: abrir 0.7s cubic-bezier(.2,.9,.3,1) both; transform-box: fill-box; transform-origin: center; }
+    @keyframes abrir { from { opacity: 0; transform: scaleY(0.02) scaleX(0.6); } 60% { opacity: 1; transform: scaleY(0.02) scaleX(1); } to { opacity: 1; transform: none; } }
+    .linea { animation: linea 0.5s ease-out both; }
+    @keyframes linea { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+    .check { stroke-dasharray: 30; animation: marcar 0.4s ease-out both; }
+    @keyframes marcar { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+
+    .borde { stroke-dasharray: 160 2400; animation: recorrer 6s linear infinite; }
+    @keyframes recorrer { to { stroke-dashoffset: -2560; } }
+    .escaneo { animation: escanear 4s linear infinite; }
+    @keyframes escanear { from { transform: translateY(-40px); } to { transform: translateY(360px); } }
+    .alerta { animation: alerta 1.6s ease-in-out 3.5s infinite; }
+    @keyframes alerta { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .ascenso { animation: ascenso 1.2s ease-in-out infinite; }
+    @keyframes ascenso { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    """ + MOVIMIENTO_REDUCIDO
+
+    marco = "M 22 0 H 978 L 1000 22 V 338 L 978 360 H 22 L 0 338 V 22 Z"
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="360" viewBox="0 0 1000 360" role="img" aria-labelledby="t">
+  <title id="t">Misión diaria: contribuir todos los días sin romper la racha</title>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1A33"/>
+      <stop offset="1" stop-color="#050B18"/>
+    </linearGradient>
+    <linearGradient id="haz" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity="0"/>
+      <stop offset="1" stop-color="#60A5FA" stop-opacity="0.16"/>
+    </linearGradient>
+    <pattern id="lineas" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#93C5FD" fill-opacity="0.05"/>
+    </pattern>
+    <filter id="neonAzul" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="dentro"><path d="{marco}"/></clipPath>
+  </defs>
+  <style>{css}</style>
+
+  <g class="abre">
+    <path d="{marco}" fill="url(#panel)" fill-opacity="0.96"/>
+    <path d="{marco}" fill="url(#lineas)"/>
+    <g clip-path="url(#dentro)"><rect y="0" width="1000" height="60" fill="url(#haz)" class="escaneo solo-animado"/></g>
+    <path d="{marco}" fill="none" stroke="#3B82F6" stroke-width="2" filter="url(#neonAzul)"/>
+    <path d="{marco}" fill="none" stroke="#DBEAFE" stroke-width="3" class="borde solo-animado"/>
+
+    <!-- Cabecera -->
+    <g class="linea" style="animation-delay:0.5s">
+      <line x1="60" y1="52" x2="320" y2="52" stroke="#3B82F6" stroke-opacity="0.6"/>
+      <line x1="680" y1="52" x2="940" y2="52" stroke="#3B82F6" stroke-opacity="0.6"/>
+      <rect x="335" y="32" width="330" height="40" fill="#0B1A33" stroke="#60A5FA" stroke-width="1.5"/>
+      <text x="500" y="61" text-anchor="middle" class="cabecera" fill="#DBEAFE">MISIÓN DIARIA</text>
+    </g>
+    <g class="linea" style="animation-delay:0.8s">
+      <text x="60" y="112" class="etq" fill="#60A5FA">MANTENER LA RACHA</text>
+      <text x="60" y="136" class="detalle" fill="#CBD5E1">Ningún día en blanco. Un commit pequeño también cuenta.</text>
+    </g>
+
+    <!-- Objetivos -->
+    {"".join(filas)}
+
+    <!-- Recompensa -->
+    <g class="linea" style="animation-delay:2.4s">
+      <rect x="580" y="96" width="360" height="176" fill="#0B1A33" stroke="#3B82F6" stroke-opacity="0.6"/>
+      <text x="600" y="124" class="etq" fill="#60A5FA">RECOMPENSA</text>
+      <text x="600" y="164" class="grande" fill="#F8FAFC">+1 DÍA DE RACHA <tspan fill="#60A5FA" class="ascenso">▲</tspan></text>
+      <text x="600" y="198" class="valor" fill="#DBEAFE"><tspan fill="#60A5FA">▸ </tspan>Experiencia acumulada</text>
+      <text x="600" y="226" class="valor" fill="#DBEAFE"><tspan fill="#60A5FA">▸ </tspan>Un paso más cerca del objetivo</text>
+      <text x="600" y="254" class="detalle" fill="#94A3B8">Se reinicia cada medianoche (hora de Colombia)</text>
+    </g>
+
+    <!-- Advertencia -->
+    <g class="linea" style="animation-delay:3s">
+      <line x1="60" y1="300" x2="940" y2="300" stroke="#3B82F6" stroke-opacity="0.35"/>
+      <text x="500" y="332" text-anchor="middle" class="valor alerta" fill="#F87171">⚠ ADVERTENCIA: no completar la misión diaria tendrá una penalización.</text>
     </g>
   </g>
 </svg>
@@ -1079,6 +1191,7 @@ def main() -> None:
     salidas = {
         "antimagia.svg": antimagia(),
         "sistema.svg": sistema(),
+        "mision-diaria.svg": mision_diaria(),
         "arise.svg": arise(),
     }
     for c in CAMINOS:
