@@ -1,9 +1,14 @@
 name: Recordatorio de racha
 
+# GitHub atrasa los cron programados (a veces 3 a 5 horas, sobre todo en hora en punto).
+# Por eso se programan temprano, en minutos raros, y una corrida que llega
+# después de medianoche (hora de Colombia) ya no revisa nada: el día anterior
+# ya se cerró y el de hoy apenas empieza, así que solo daría una falsa alarma.
 on:
   schedule:
-    - cron: "0 0 * * *" # 7:00 p. m. hora de Colombia
-    - cron: "30 3 * * *" # 10:30 p. m. hora de Colombia
+    - cron: "17 22 * * *" # 5:17 p. m. hora de Colombia
+    - cron: "47 0 * * *" # 7:47 p. m. hora de Colombia
+    - cron: "13 2 * * *" # 9:13 p. m. hora de Colombia
   workflow_dispatch:
     inputs:
       probar:
@@ -26,17 +31,25 @@ jobs:
           USUARIO: ${{ github.repository_owner }}
         run: |
           fecha=$(TZ=America/Bogota date +%F)
+          hora=$(TZ=America/Bogota date +%-H)
+          echo "fecha=$fecha" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$hora" -lt 12 ]; then
+            echo "tarde=true" >> "$GITHUB_OUTPUT"
+            echo "La corrida llegó a las $(TZ=America/Bogota date +%H:%M) (hora de Colombia), después de medianoche: se omite." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           total=$(gh api graphql \
             -f query='query($u: String!) { user(login: $u) { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }' \
             -f u="$USUARIO" \
             --jq "[.data.user.contributionsCollection.contributionCalendar.weeks[].contributionDays[] | select(.date == \"$fecha\")][0].contributionCount // 0")
-          echo "fecha=$fecha" >> "$GITHUB_OUTPUT"
           echo "total=$total" >> "$GITHUB_OUTPUT"
           echo "Contribuciones del $fecha: **$total**" >> "$GITHUB_STEP_SUMMARY"
 
       # Al fallar, GitHub manda un correo de "Run failed" a la cuenta dueña del flujo
       - name: Avisar por correo
-        if: steps.hoy.outputs.total == '0' || inputs.probar == true
+        if: steps.hoy.outputs.tarde != 'true' && (steps.hoy.outputs.total == '0' || inputs.probar == true)
         run: |
           echo "::error::Hoy (${{ steps.hoy.outputs.fecha }}) todavía no tienes contribuciones. Haz un commit antes de medianoche para no perder la racha."
           exit 1
