@@ -1,14 +1,17 @@
 name: Recordatorio de racha
 
-# GitHub atrasa los cron programados (a veces 3 a 5 horas, sobre todo en hora en punto).
-# Por eso se programan temprano, en minutos raros, y una corrida que llega
-# después de medianoche (hora de Colombia) ya no revisa nada: el día anterior
-# ya se cerró y el de hoy apenas empieza, así que solo daría una falsa alarma.
+# GitHub atrasa mucho estos cron: medido en octubre de 2026, de 2 a 7 horas en la noche
+# de Colombia (la de las 9:13 p. m. llegaba a las 3 a. m.). Por eso se programan desde
+# el mediodía, en minutos raros, y cada corrida decide por la hora en que LLEGA:
+#   antes de las 2 p. m.     -> nada, es muy temprano para avisar
+#   2 p. m. a 11:59 p. m.    -> aviso por correo si el día va en 0
+#   después de medianoche    -> nada, el día ya se cerró (solo sería una falsa alarma)
+# Desde las 8 p. m. el repo privado racha-respaldo hace un commit si el día sigue en 0.
 on:
   schedule:
-    - cron: "17 22 * * *" # 5:17 p. m. hora de Colombia
-    - cron: "47 0 * * *" # 7:47 p. m. hora de Colombia
-    - cron: "13 2 * * *" # 9:13 p. m. hora de Colombia
+    - cron: "17 17 * * *" # 12:17 p. m. hora de Colombia
+    - cron: "47 19 * * *" # 2:47 p. m.
+    - cron: "43 21 * * *" # 4:43 p. m.
   workflow_dispatch:
     inputs:
       probar:
@@ -32,13 +35,22 @@ jobs:
         run: |
           fecha=$(TZ=America/Bogota date +%F)
           hora=$(TZ=America/Bogota date +%-H)
+          llegada=$(TZ=America/Bogota date +%H:%M)
           echo "fecha=$fecha" >> "$GITHUB_OUTPUT"
 
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$hora" -lt 12 ]; then
-            echo "tarde=true" >> "$GITHUB_OUTPUT"
-            echo "La corrida llegó a las $(TZ=America/Bogota date +%H:%M) (hora de Colombia), después de medianoche: se omite." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "$hora" -lt 12 ]; then
+              echo "omitir=true" >> "$GITHUB_OUTPUT"
+              echo "Llegó a las $llegada (hora de Colombia), después de medianoche: el día ya se cerró, se omite." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            if [ "$hora" -lt 14 ]; then
+              echo "omitir=true" >> "$GITHUB_OUTPUT"
+              echo "Llegó a las $llegada (hora de Colombia), antes de las 2 p. m.: muy temprano para avisar, se omite." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
           fi
+          echo "Llegó a las $llegada (hora de Colombia)." >> "$GITHUB_STEP_SUMMARY"
 
           total=$(gh api graphql \
             -f query='query($u: String!) { user(login: $u) { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }' \
@@ -49,7 +61,7 @@ jobs:
 
       # Al fallar, GitHub manda un correo de "Run failed" a la cuenta dueña del flujo
       - name: Avisar por correo
-        if: steps.hoy.outputs.tarde != 'true' && (steps.hoy.outputs.total == '0' || inputs.probar == true)
+        if: steps.hoy.outputs.omitir != 'true' && (steps.hoy.outputs.total == '0' || inputs.probar == true)
         run: |
           echo "::error::Hoy (${{ steps.hoy.outputs.fecha }}) todavía no tienes contribuciones. Haz un commit antes de medianoche para no perder la racha."
           exit 1
