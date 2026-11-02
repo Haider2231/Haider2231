@@ -1,0 +1,38 @@
+name: Generar racha
+
+# La imagen de la racha se genera aquí y no con el widget externo: ese queda hasta 24 h
+# en la caché de GitHub y calcula en UTC, así que cerca de las 7 p. m. (hora de Colombia)
+# podía mostrar la racha en 0. Solo hay commit cuando cambia la imagen.
+on:
+  schedule:
+    - cron: "23 * * * *" # cada hora, en un minuto raro para que GitHub no la atrase tanto
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Generar SVG de la racha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USUARIO: ${{ github.repository_owner }}
+        run: python scripts/generar_racha.py assets/racha.svg >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar cambios
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add assets/racha.svg
+          if git commit -m "Actualizar racha de contribuciones"; then
+            git push
+          fi
