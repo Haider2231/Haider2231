@@ -52,17 +52,16 @@ jobs:
           fi
           echo "Llegó a las $llegada (hora de Colombia)." >> "$GITHUB_STEP_SUMMARY"
 
-          # El calendario se pide en hora de Colombia (desde/hasta con -05:00). Sin rango, GitHub
-          # lo arma en UTC: un commit de 7 p. m. a medianoche cae en el día siguiente, y así el
-          # 2026-11-02 se vio con 1 contribución cuando en Colombia iba en 0 (no hubo aviso).
-          # Se trae también ayer para poder comprobar en el resumen que los días cuadran.
-          ayer=$(TZ=America/Bogota date -d yesterday +%F)
-          dias=$(gh api graphql \
-            -f query='query($u: String!, $desde: DateTime!, $hasta: DateTime!) { user(login: $u) { contributionsCollection(from: $desde, to: $hasta) { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }' \
-            -f u="$USUARIO" -f desde="${ayer}T00:00:00-05:00" -f hasta="${fecha}T23:59:59-05:00" \
-            --jq '[.data.user.contributionsCollection.contributionCalendar.weeks[].contributionDays[]]')
-          total=$(echo "$dias" | jq --arg f "$fecha" '[.[] | select(.date == $f)][0].contributionCount // 0')
-          echo "Calendario consultado (hora de Colombia): $(echo "$dias" | jq -r 'map("\(.date): \(.contributionCount)") | join(", ")')" >> "$GITHUB_STEP_SUMMARY"
+          # Se cuenta con la búsqueda, por la hora real de cada commit, PR o issue (desde las 00:00
+          # de Colombia). El calendario de la API no sirve: reparte los días en UTC aunque se le
+          # pida otro rango, y un commit de las 8:39 p. m. del 1-nov contó como del 2-nov (ese día
+          # no hubo aviso). La búsqueda no ve repos privados como racha-respaldo: en ese caso puede
+          # llegar un aviso de más, nunca faltar uno.
+          desde="${fecha}T00:00:00-05:00"
+          commits=$(gh api -X GET search/commits -f q="author:$USUARIO author-date:>=$desde" --jq .total_count)
+          prs=$(gh api -X GET search/issues -f q="author:$USUARIO created:>=$desde" --jq .total_count)
+          total=$((commits + prs))
+          echo "Desde $desde: $commits commits y $prs PR o issues." >> "$GITHUB_STEP_SUMMARY"
           echo "total=$total" >> "$GITHUB_OUTPUT"
           echo "Contribuciones del $fecha: **$total**" >> "$GITHUB_STEP_SUMMARY"
 
